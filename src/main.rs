@@ -12,7 +12,6 @@ fn main() {
         let printed_line = print_line(chunk.1, chunk.0, data.len(), &config);
         println!("{printed_line}")
     });
-    println!("{:?}", config);
 }
 
 fn print_line(line: &[u8], line_num: usize, block_len: usize, config: &args::Args) -> String {
