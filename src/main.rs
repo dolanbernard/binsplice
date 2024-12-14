@@ -15,41 +15,6 @@ fn main() {
     println!("{:?}", config);
 }
 
-fn main_old() {
-    let config = args::Args::parse();
-    let data = std::fs::read(&config.input_filename).unwrap();
-    let line_len = config.columns * config.column_len;
-    data.chunks(line_len).enumerate().for_each(|chunk| {
-        if !config.hide_ranges {
-            let line_num = chunk.0;
-            let line_num_len = (data.len().checked_ilog(16).unwrap_or(0) + 1) as usize;
-            let line_start = line_num * line_len;
-            let line_end = std::cmp::min(line_start + line_len, data.len());
-            print!("<{}-{}>  ", to_str_radix(line_start, 16, line_num_len), to_str_radix(line_end, 16, line_num_len));
-        }
-        let line = chunk.1;
-        line.chunks(config.column_len).for_each(|column| {
-            column.iter().for_each(|b| {
-                print!("{} ", to_str_radix(*b as usize, 16, 3));
-            });
-            print!("  ");
-        });
-        if !config.no_decode {
-            line.iter().for_each(|b| {
-                if line.len() == line_len {
-                    let c = *b as char;
-                    if c.is_alphanumeric() {
-                        print!("{c}");
-                    } else {
-                        print!(".");
-                    }
-                }
-            })
-        }
-        println!();
-    });
-}
-
 fn print_line(line: &[u8], line_num: usize, block_len: usize, config: &args::Args) -> String {
     let mut printed_line = String::new();
     if !config.hide_ranges {
