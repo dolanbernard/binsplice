@@ -16,7 +16,7 @@ fn main() {
                 print!(" ");
             }
         }
-        print!("{}", to_str_radix(b.1, 16, 3));
+        print!("{}", to_str_radix(b.1 as usize, 16, 3));
     });
     println!();*/
     data.chunks(line_len).enumerate().for_each(|chunk| {
@@ -28,12 +28,22 @@ fn main() {
             print!("<{}-{}>  ", to_str_radix(line_start, 16, line_num_len), to_str_radix(line_end, 16, line_num_len));
         }
         let line = chunk.1;
-        line.chunks(config.columns).for_each(|column| {
+        line.chunks(config.group_len).for_each(|column| {
             column.iter().for_each(|b| {
                 print!("{} ", to_str_radix(*b as usize, 16, 3));
             });
-            print!(" ");
+            print!("  ");
         });
+        if !config.no_decode {
+            line.iter().for_each(|b| {
+                let c = *b as char;
+                if c.is_alphanumeric() {
+                    print!("{c}");
+                } else {
+                    print!(".");
+                }
+            })
+        }
         println!();
     });
 }
