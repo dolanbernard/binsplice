@@ -6,10 +6,13 @@ fn main() {
     let config = args::Args::parse();
     let data = std::fs::read(&config.input_filename).unwrap();
     let line_len = config.columns * config.column_len;
-    data.chunks(line_len).enumerate().for_each(|chunk| {
+    let start_index = config.from.unwrap_or_default();
+    let end_index = usize::min(config.to.unwrap_or(usize::MAX), data.len());
+    data[start_index..end_index].chunks(line_len).enumerate().for_each(|chunk| {
         let printed_line = print_line(chunk.1, chunk.0, data.len(), &config);
         println!("{printed_line}")
     });
+    println!("{:?}", config);
 }
 
 fn main_old() {
