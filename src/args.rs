@@ -5,10 +5,10 @@ use clap::{Parser, Subcommand};
 pub struct Args {
     //#[command(subcommand)]
     //pub command: Command,
-    #[arg(short='c', long="cols", required = false, default_value_t=4)]
+    #[arg(short='c', long="cols", required = false, default_value_t=2)]
     pub columns: usize,
-    #[arg(short='l', long="line-len", required = false, default_value_t=16)]
-    pub line_len: usize,
+    #[arg(short='l', long="group-len", required = false, default_value_t=8)]
+    pub group_len: usize,
     #[arg(short='f', long="from", required = false, default_value=None)]
     pub from: Option<usize>,
     #[arg(short='t', long="to", required = false, default_value=None)]
@@ -18,7 +18,7 @@ pub struct Args {
     #[arg(short='n', long="no-decode", required=false)]
     pub no_decode: bool,
     #[arg(short='i', long="input", required=true)]
-    pub filename: String,
+    pub input_filename: String,
     #[arg(short='o', long="output", required=false, default_value = None)]
     pub output_filename: Option<String>,
 }
