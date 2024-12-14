@@ -5,20 +5,7 @@ mod args;
 fn main() {
     let config = args::Args::parse();
     let data = std::fs::read(&config.input_filename).unwrap();
-    let line_len = config.columns * config.group_len;
-    /*data.into_iter().enumerate().for_each(|b| {
-        if b.0 % line_len == 0 {
-            println!();
-        } else {
-            if b.0 % config.group_len == 0 {
-                print!("    ");
-            } else {
-                print!(" ");
-            }
-        }
-        print!("{}", to_str_radix(b.1 as usize, 16, 3));
-    });
-    println!();*/
+    let line_len = config.columns * config.column_len;
     data.chunks(line_len).enumerate().for_each(|chunk| {
         if !config.hide_ranges {
             let line_num = chunk.0;
@@ -28,7 +15,7 @@ fn main() {
             print!("<{}-{}>  ", to_str_radix(line_start, 16, line_num_len), to_str_radix(line_end, 16, line_num_len));
         }
         let line = chunk.1;
-        line.chunks(config.group_len).for_each(|column| {
+        line.chunks(config.column_len).for_each(|column| {
             column.iter().for_each(|b| {
                 print!("{} ", to_str_radix(*b as usize, 16, 3));
             });
@@ -36,11 +23,13 @@ fn main() {
         });
         if !config.no_decode {
             line.iter().for_each(|b| {
-                let c = *b as char;
-                if c.is_alphanumeric() {
-                    print!("{c}");
-                } else {
-                    print!(".");
+                if line.len() == line_len {
+                    let c = *b as char;
+                    if c.is_alphanumeric() {
+                        print!("{c}");
+                    } else {
+                        print!(".");
+                    }
                 }
             })
         }

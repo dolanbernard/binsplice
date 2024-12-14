@@ -7,8 +7,8 @@ pub struct Args {
     //pub command: Command,
     #[arg(short='c', long="cols", required = false, default_value_t=2)]
     pub columns: usize,
-    #[arg(short='l', long="group-len", required = false, default_value_t=8)]
-    pub group_len: usize,
+    #[arg(short='l', long="col-len", required = false, default_value_t=8)]
+    pub column_len: usize,
     #[arg(short='f', long="from", required = false, default_value=None)]
     pub from: Option<usize>,
     #[arg(short='t', long="to", required = false, default_value=None)]
