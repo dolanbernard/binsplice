@@ -6,7 +6,7 @@ fn main() {
     let config = args::Args::parse();
     let data = std::fs::read(&config.input_filename).unwrap();
     let line_len = config.columns * config.group_len;
-    data.into_iter().enumerate().for_each(|b| {
+    /*data.into_iter().enumerate().for_each(|b| {
         if b.0 % line_len == 0 {
             println!();
         } else {
@@ -18,10 +18,27 @@ fn main() {
         }
         print!("{}", to_str_radix(b.1, 16, 3));
     });
-    println!();
+    println!();*/
+    data.chunks(line_len).enumerate().for_each(|chunk| {
+        if !config.hide_ranges {
+            let line_num = chunk.0;
+            let line_num_len = (data.len().checked_ilog(16).unwrap_or(0) + 1) as usize;
+            let line_start = line_num * line_len;
+            let line_end = std::cmp::min(line_start + line_len, data.len());
+            print!("<{}-{}>  ", to_str_radix(line_start, 16, line_num_len), to_str_radix(line_end, 16, line_num_len));
+        }
+        let line = chunk.1;
+        line.chunks(config.columns).for_each(|column| {
+            column.iter().for_each(|b| {
+                print!("{} ", to_str_radix(*b as usize, 16, 3));
+            });
+            print!(" ");
+        });
+        println!();
+    });
 }
 
-fn to_str_radix(b: u8, radix: u8, padding: u8) -> String {
+fn to_str_radix(b: usize, radix: usize, padding: usize) -> String {
     let mut value = b;
     let mut result = String::new();
     if value == 0 {
@@ -33,8 +50,8 @@ fn to_str_radix(b: u8, radix: u8, padding: u8) -> String {
         result.push(c.to_ascii_uppercase());
         value /= radix;
     }
-    if padding > result.len() as u8 {
-        let padding_len = padding - result.len() as u8;
+    if padding > result.len() {
+        let padding_len = padding - result.len();
         for _ in 0..padding_len {
             result.insert(0, '0');
         }

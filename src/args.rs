@@ -17,6 +17,8 @@ pub struct Args {
     //pub decode: bool,
     #[arg(short='n', long="no-decode", required=false)]
     pub no_decode: bool,
+    #[arg(short='g', long="hide-ranges", required=false)]
+    pub hide_ranges: bool,
     #[arg(short='i', long="input", required=true)]
     pub input_filename: String,
     #[arg(short='o', long="output", required=false, default_value = None)]
