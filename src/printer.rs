@@ -71,11 +71,10 @@ fn to_str_radix(b: usize, radix: usize, padding: usize) -> String {
         result.push(c.to_ascii_uppercase());
         value /= radix;
     }
+    result = result.chars().rev().collect();
     if padding > result.len() {
         let padding_len = padding - result.len();
-        for _ in 0..padding_len {
-            result.insert(0, '0');
-        }
+        result = "0".repeat(padding_len) + &result;
     }
     result
 }
@@ -94,6 +93,8 @@ mod tests {
         assert_eq!("FF", to_str_radix(255, 16, 2));
         assert_eq!("0", to_str_radix(0, 3, 0));
         assert_eq!("011", to_str_radix(4, 3, 3));
+        assert_eq!("10", to_str_radix(16, 16, 2));
+        assert_eq!("007F", to_str_radix(127, 16, 4));
     }
 
 }
