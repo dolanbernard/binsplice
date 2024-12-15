@@ -27,6 +27,8 @@ pub enum Command {
         hide_ranges: bool,
         #[arg(short='i', long="input", required=true)]
         input_filename: String,
+        #[arg(short='o', long="output", required=false, default_value=None)]
+        output_filename: Option<String>,
     },
     Patch {
         #[arg(short='i', long="input", required=true)]

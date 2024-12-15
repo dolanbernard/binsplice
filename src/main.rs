@@ -1,3 +1,6 @@
+use std::fs::File;
+use std::io::Write;
+
 use clap::Parser;
 
 use args::Command;
@@ -18,22 +21,27 @@ fn main() {
             to,
             no_decode,
             hide_ranges,
-            input_filename
+            input_filename,
+            output_filename,
         } => {
             let data = std::fs::read(input_filename).unwrap();
-            printer::print_data(&data, columns, column_len, from, to, no_decode, hide_ranges)
-                .into_iter()
-                .for_each(|line| println!("{line}"));
+            let lines = printer::print_data(&data, columns, column_len, from, to, no_decode, hide_ranges);
+            if let Some(output_filename) = output_filename {
+                let mut file = File::create(output_filename).unwrap();
+                lines.into_iter().for_each(|line| writeln!(file, "{line}").unwrap());
+            } else {
+                lines.into_iter().for_each(|line| println!("{line}"));
+            }
         },
         Command::Patch {
             input_filename,
             patch_filename,
-            output_filename
+            output_filename,
         } => {
             let mut data = std::fs::read(input_filename).unwrap();
             let mut patch = std::fs::read(patch_filename).unwrap();
             let mut patcher = IpsPatcher::new(&mut patch, 0);
-            println!("{} bytes patched", patcher.patch(&mut data).unwrap());
+            patcher.patch(&mut data).unwrap();
             std::fs::write(output_filename, data).unwrap();
         },
     }
