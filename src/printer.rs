@@ -1,34 +1,34 @@
 
-use crate::args::Args;
 
-pub fn print_data(data: &Vec<u8>, config: &Args) {
-    let line_len = config.columns * config.column_len;
-    let start_index = config.from.unwrap_or_default();
-    let end_index = usize::min(config.to.unwrap_or(usize::MAX), data.len());
+
+pub fn print_data(data: &Vec<u8>, columns: usize, column_len: usize, start_index: Option<usize>, end_index: Option<usize>, no_decode: bool, hide_ranges: bool) {
+    let line_len = columns * column_len;
+    let start_index = start_index.unwrap_or_default();
+    let end_index = usize::min(end_index.unwrap_or(usize::MAX), data.len());
     data[start_index..end_index].chunks(line_len).enumerate().for_each(|chunk| {
-        let printed_line = print_line(chunk.1, chunk.0, data.len(), &config);
+        let printed_line = print_line(chunk.1, chunk.0, data.len(), columns, column_len, no_decode, hide_ranges);
         println!("{printed_line}")
     });
 }
 
-fn print_line(line: &[u8], line_num: usize, block_len: usize, config: &Args) -> String {
+fn print_line(line: &[u8], line_num: usize, block_len: usize, columns: usize, column_len: usize, no_decode: bool, hide_ranges: bool) -> String {
     let mut printed_line = String::new();
-    if !config.hide_ranges {
+    if !hide_ranges {
         let line_num_len = (block_len.checked_ilog(16).unwrap_or(0) + 1) as usize;
         let line_start = line_num * line.len();
         let line_end = std::cmp::min(line_start + line.len(), block_len);
         printed_line.push_str(&format!("<{}-{}>   ", to_str_radix(line_start, 16, line_num_len), to_str_radix(line_end, 16, line_num_len)));
     }
-    line.chunks(config.column_len).for_each(|column| {
+    line.chunks(column_len).for_each(|column| {
         column.iter().for_each(|b| {
             printed_line.push_str(&to_str_radix(*b as usize, 16, 2));
             printed_line.push(' ');
         });
         printed_line.push_str("  ");
     });
-    if !config.no_decode {
-        let missing_byte_count = (config.columns * config.column_len) - line.len();
-        let missing_col_count = missing_byte_count / config.column_len;
+    if !no_decode {
+        let missing_byte_count = (columns * column_len) - line.len();
+        let missing_col_count = missing_byte_count / column_len;
         if missing_byte_count != 0 {
             let mut padding_string = String::new();
             for _ in 0..missing_byte_count {
