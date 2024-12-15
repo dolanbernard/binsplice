@@ -15,7 +15,7 @@ pub fn print_data(data: &Vec<u8>,
     data[start_index..end_index]
         .chunks(line_len)
         .enumerate()
-        .map(|chunk| print_line(chunk.1, chunk.0, data.len(), columns, column_len, no_decode, hide_ranges))
+        .map(|chunk| print_line(chunk.1, chunk.0, (start_index..end_index).len(), columns, column_len, no_decode, hide_ranges))
         .collect()
 }
 
