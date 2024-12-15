@@ -44,12 +44,10 @@ impl<'a> IpsPatcher<'a> {
 }
 
 fn read_usize(be_bytes: &[u8]) -> usize {
-    //usize::from_be_bytes(be_bytes.try_into().unwrap())
-    let mut result = 0;
-    for i in (0..be_bytes.len()).rev() {
-        result += be_bytes[i] as usize;
-    }
-    result
+    let mut usize_bytes = [0u8; std::mem::size_of::<usize>()];
+    let usize_len = usize_bytes.len();
+    usize_bytes[usize_len - be_bytes.len()..].copy_from_slice(be_bytes);
+    usize::from_be_bytes(usize_bytes)
 }
 
 fn write_payload(offset: usize, buffer: &mut Vec<u8>, payload: &[u8]) -> usize {
@@ -158,5 +156,13 @@ mod tests {
         assert_eq!(patched_data.len(), data.len());
         assert_eq!(patched_data, data);
         println!("{:?}", data);
+    }
+
+    #[test]
+    fn test_read_usize() {
+        assert_eq!(69, read_usize(&[0x45]));
+        assert_eq!(69, read_usize(&[0, 0x45]));
+        assert_eq!(420, read_usize(&[0x01, 0xA4]));
+        assert_eq!(543948, read_usize(&[08, 0x4C, 0xCC]));
     }
 }
