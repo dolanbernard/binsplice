@@ -1,6 +1,8 @@
 use clap::Parser;
 
 mod args;
+mod error;
+mod patcher;
 
 fn main() {
     let config = args::Args::parse();
