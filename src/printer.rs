@@ -1,14 +1,22 @@
 
 
 
-pub fn print_data(data: &Vec<u8>, columns: usize, column_len: usize, start_index: Option<usize>, end_index: Option<usize>, no_decode: bool, hide_ranges: bool) {
+pub fn print_data(data: &Vec<u8>,
+    columns: usize,
+    column_len: usize,
+    start_index: Option<usize>,
+    end_index: Option<usize>,
+    no_decode: bool,
+    hide_ranges: bool
+) -> Vec<String> {
     let line_len = columns * column_len;
     let start_index = start_index.unwrap_or_default();
     let end_index = usize::min(end_index.unwrap_or(usize::MAX), data.len());
-    data[start_index..end_index].chunks(line_len).enumerate().for_each(|chunk| {
-        let printed_line = print_line(chunk.1, chunk.0, data.len(), columns, column_len, no_decode, hide_ranges);
-        println!("{printed_line}")
-    });
+    data[start_index..end_index]
+        .chunks(line_len)
+        .enumerate()
+        .map(|chunk| print_line(chunk.1, chunk.0, data.len(), columns, column_len, no_decode, hide_ranges))
+        .collect()
 }
 
 fn print_line(line: &[u8], line_num: usize, block_len: usize, columns: usize, column_len: usize, no_decode: bool, hide_ranges: bool) -> String {

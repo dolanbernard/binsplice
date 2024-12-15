@@ -21,7 +21,9 @@ fn main() {
             input_filename
         } => {
             let data = std::fs::read(input_filename).unwrap();
-            printer::print_data(&data, columns, column_len, from, to, no_decode, hide_ranges);
+            printer::print_data(&data, columns, column_len, from, to, no_decode, hide_ranges)
+                .into_iter()
+                .for_each(|line| println!("{line}"));
         },
         Command::Patch {
             input_filename,
