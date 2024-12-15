@@ -135,7 +135,6 @@ mod tests {
         assert_eq!(4, uut.patch(&mut data).unwrap());
         assert_eq!(patched_data.len(), data.len());
         assert_eq!(patched_data, data);
-        println!("{:?}", data);
     }
 
     #[test]
@@ -155,7 +154,48 @@ mod tests {
         assert_eq!(4, uut.patch(&mut data).unwrap());
         assert_eq!(patched_data.len(), data.len());
         assert_eq!(patched_data, data);
-        println!("{:?}", data);
+    }
+
+    #[test]
+    fn test_patch_and_extending() {
+        let mut data: Vec<u8> = (0..100).into_iter().collect();
+        let mut patched_data = data.clone();
+        patched_data.extend_from_slice(&[102, 103]);
+        patched_data[98] = 100;
+        patched_data[99] = 101;
+
+        let mut patch = Vec::new();
+        patch.extend_from_slice(PATCH_HEADER);
+        patch.extend_from_slice(&[0, 0, 98]);
+        patch.extend_from_slice(&[0, 4]);
+        patch.extend_from_slice(&[100, 101, 102, 103]);
+        patch.extend_from_slice(EOF);
+
+        let mut uut = IpsPatcher::new(&mut patch, 0);
+        assert_eq!(4, uut.patch(&mut data).unwrap());
+        assert_eq!(patched_data.len(), data.len());
+        assert_eq!(patched_data, data);
+    }
+
+    #[test]
+    fn test_rle_patch_and_extending() {
+        let mut data: Vec<u8> = (0..100).into_iter().collect();
+        let mut patched_data = data.clone();
+        patched_data.extend_from_slice(&[69, 69]);
+        patched_data[98] = 69;
+        patched_data[99] = 69;
+
+        let mut patch = Vec::new();
+        patch.extend_from_slice(PATCH_HEADER);
+        patch.extend_from_slice(&[0, 0, 98]);
+        patch.extend_from_slice(&[0, 0]);
+        patch.extend_from_slice(&[0, 4, 69]);
+        patch.extend_from_slice(EOF);
+
+        let mut uut = IpsPatcher::new(&mut patch, 0);
+        assert_eq!(4, uut.patch(&mut data).unwrap());
+        assert_eq!(patched_data.len(), data.len());
+        assert_eq!(patched_data, data);
     }
 
     #[test]
