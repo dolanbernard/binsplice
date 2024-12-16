@@ -1,4 +1,4 @@
-
+use std::io::Write;
 
 
 pub fn print_data(data: &Vec<u8>,
@@ -7,8 +7,9 @@ pub fn print_data(data: &Vec<u8>,
     start_index: Option<usize>,
     end_index: Option<usize>,
     no_decode: bool,
-    hide_ranges: bool
-) -> Vec<String> {
+    hide_ranges: bool,
+    writer: &mut Box<dyn Write>,
+) {
     let line_len = columns * column_len;
     let start_index = start_index.unwrap_or_default();
     let end_index = usize::min(end_index.unwrap_or(usize::MAX), data.len());
@@ -16,7 +17,7 @@ pub fn print_data(data: &Vec<u8>,
         .chunks(line_len)
         .enumerate()
         .map(|chunk| print_line(chunk.1, chunk.0, (start_index..end_index).len(), columns, column_len, no_decode, hide_ranges))
-        .collect()
+        .for_each(|line| writeln!(writer, "{}", line).unwrap());
 }
 
 fn print_line(line: &[u8], line_num: usize, block_len: usize, columns: usize, column_len: usize, no_decode: bool, hide_ranges: bool) -> String {
@@ -49,7 +50,10 @@ fn print_line(line: &[u8], line_num: usize, block_len: usize, columns: usize, co
         }
         line.iter().for_each(|b| {
             let c = *b as char;
-            if c.is_alphanumeric() {
+            if c.is_whitespace() {
+                printed_line.push(' ');
+            }
+            else if c.is_ascii() {
                 printed_line.push(c);
             } else {
                 printed_line.push('.');

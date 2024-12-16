@@ -39,8 +39,3 @@ pub enum Command {
         output_filename: String,
     },
 }
-
-enum _DecodeStrategy {
-    Ascii,
-    Asmx86,
-}

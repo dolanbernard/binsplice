@@ -25,13 +25,13 @@ fn main() {
             output_filename,
         } => {
             let data = std::fs::read(input_filename).unwrap();
-            let lines = printer::print_data(&data, columns, column_len, from, to, no_decode, hide_ranges);
-            if let Some(output_filename) = output_filename {
-                let mut file = File::create(output_filename).unwrap();
-                lines.into_iter().for_each(|line| writeln!(file, "{line}").unwrap());
-            } else {
-                lines.into_iter().for_each(|line| println!("{line}"));
+            let mut writer: Box<dyn Write> = if let Some(output_filename) = output_filename {
+                Box::new(File::create(output_filename).unwrap())
             }
+            else {
+                Box::new(std::io::stdout())
+            };
+            printer::print_data(&data, columns, column_len, from, to, no_decode, hide_ranges, &mut writer);
         },
         Command::Patch {
             input_filename,
