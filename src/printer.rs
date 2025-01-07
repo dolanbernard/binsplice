@@ -53,7 +53,7 @@ fn print_line(line: &[u8], line_num: usize, block_len: usize, columns: usize, co
             if c.is_whitespace() {
                 printed_line.push(' ');
             }
-            else if c.is_ascii() {
+            else if c.is_ascii_graphic() {
                 printed_line.push(c);
             } else {
                 printed_line.push('.');
